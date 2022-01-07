@@ -23,7 +23,7 @@ public class Arena {
     private long _timeStart;
     private int _grade;
 
-    public Arena(game_service game) {
+    public Arena(Client game) {
         updateGraph(game.toString());
         Agent.set_graph(_graph);
         Pokemon.set_graph(_graph);
@@ -33,7 +33,7 @@ public class Arena {
         _pokemonsWithOwner = new ArrayList<>();
     }
 
-    public synchronized void update(game_service game) {
+    public synchronized void update(Client game) {
 
         updateAgents(game.getAgents());
         updatePokemons(game.getPokemons());
@@ -44,9 +44,9 @@ public class Arena {
 
 
     public void updateGraph(String json) {
-        JsonObject jo = JsonParser.parseString(json).getAsJsonObject().getAsJsonObject("GameServer");
+        JsonObject jo = JsonParser.parseString(json).getAsJsonObject().getAsJsonObject("Client");
         String graph_path = jo.get("graph").getAsString();
-        DirectedWeightedGraphAlgorithms ga = new WDGraph_Algo();
+        DirectedWeightedGraphAlgorithms ga = new DWGAlgo();
         ga.load(graph_path);
         _graph = ga.getGraph();
     }
