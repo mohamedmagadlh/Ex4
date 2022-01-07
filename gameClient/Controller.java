@@ -1,7 +1,6 @@
 package gameClient;
 
-import api.game_service;
-
+import gameClient.Client;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -55,7 +54,7 @@ public class Controller extends WindowAdapter implements ActionListener {
                 _level = Integer.parseInt(strA[1]);
             }
 
-            game_service game = _run.get_game();
+            Client game = _run.get_game();
             if (game.isRunning()) {
                 System.out.print("Game stopped:\t");
                 game.stopGame();
@@ -77,4 +76,5 @@ public class Controller extends WindowAdapter implements ActionListener {
         _win = win;
     }
 }
+
 
