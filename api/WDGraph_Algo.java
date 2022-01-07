@@ -1,7 +1,5 @@
 package api;
-
 import com.google.gson.*;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,86 +7,50 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-/**
- * This class represents an directed weighted Graph Theory algorithms implements dw_graph_algorithms.
- * including:
- * 0. clone(); (copy)
- * 1. init(graph);
- * 2. isConnected(); // strongly (all ordered pais connected)
- * 3. double shortestPathDist(int src, int dest);
- * 4. List<node_data> shortestPath(int src, int dest);
- * 5. Save(file); // JSON file
- * 6. Load(file); // JSON file
- */
-public class WDGraph_Algo implements dw_graph_algorithms {
 
-    /**
-     * the current graph, that these algorithms executed on.
-     */
-    private directed_weighted_graph _g;
+public class WDGraph_Algo implements DirectedWeightedGraphAlgorithms {
 
-    /**
-     * Default constructor
-     */
-    public WDGraph_Algo() {
-    }
-
-    /**
-     * Constructor, getting graph as params and init.
-     *
-     * @param g directed_weighted_graph
-     */
-    public WDGraph_Algo(directed_weighted_graph g) {
+    private DirectedWeightedGraph _g;
+    public WDGraph_Algo(DirectedWeightedGraph g) {
         init(g);
     }
 
-    /**
-     * Init the graph on which this set of algorithms operates on.
-     *
-     * @param g directed_weighted_graph
-     */
     @Override
-    public void init(directed_weighted_graph g) {
+    public void init(DirectedWeightedGraph g) {
         this._g = g;
     }
 
-    /**
-     * Return the underlying graph of which this class works.
-     *
-     * @return the current directed_weighted_graph.
-     */
     @Override
-    public directed_weighted_graph getGraph() {
+    public Collection<NodeData> getV() {
+        return null;
+    }
+
+    @Override
+    public Collection<EdgeData> getE(int node_id) {
+        return null;
+    }
+
+    @Override
+    public DirectedWeightedGraph getGraph() {
         return this._g;
     }
 
-    /**
-     * Compute a deep copy of this weighted graph.
-     * this method uses the copy constructors of {@link WDGraph_DS}.
-     *
-     * @return new {@link WDGraph_DS}.
-     */
     @Override
-    public directed_weighted_graph copy() {
+    public DirectedWeightedGraph copy() {
         return new WDGraph_DS(_g);
     }
 
-    /**
-     * Returns true if and only if (iff) there is a valid path from each node to each
-     * other node. NOTE: assume directional graph (all n*(n-1) ordered pairs).
-     *
-     * @return directed_weighted_graph
-     */
+
     @Override
     public boolean isConnected() {
         int num = -1;
         if (_g.getV().iterator().hasNext()) {
             // initialize the nodes tag
-            for (node_data i : this._g.getV()) {
+            for (NodeData i : this._g.getV()) {
                 i.setTag(num);
             }
 
-            node_data connectedNode = _g.getV().iterator().next();
+            NodeData connectedNode = _g.getV().iterator().next();
 
             int sum = this.connectedCheck(connectedNode, connectedNode, num);
 
@@ -98,7 +60,7 @@ public class WDGraph_Algo implements dw_graph_algorithms {
                 return false;
             }
             // here we check if other node can connect to first node(connected node) if not we return false
-            for (node_data i : _g.getV()) {
+            for (NodeData i : _g.getV()) {
                 this.connectedCheck(i, connectedNode, ++num);
                 if (connectedNode.getTag() == num) {
                     return false;
@@ -116,10 +78,10 @@ public class WDGraph_Algo implements dw_graph_algorithms {
      * @return the sum of the marked nodes
      * @@param node_data
      */
-    private int connectedCheck(node_data src, node_data dest, int num) {
+    private int connectedCheck(NodeData src, NodeData dest, int num) {
         int sum = 0;
 
-        Queue<node_data> q = new LinkedList<>();
+        Queue<NodeData> q = new LinkedList<>();
         src.setTag(num + 1);
         sum++;
         //the Queue add the first node and then add their neighbors and so on
@@ -127,8 +89,8 @@ public class WDGraph_Algo implements dw_graph_algorithms {
 
         while (!q.isEmpty()) {
             int temp = q.poll().getKey();
-            for (edge_data i : this._g.getE(temp)) {
-                node_data n_d = _g.getNode(i.getDest());
+            for (EdgeData i : this._g.getE(temp)) {
+                NodeData n_d = _g.getNode(i.getDest());
                 if (n_d.getTag() != num + 1) {
                     //every time that new unseen node enter the queue sum++
                     sum++;
@@ -142,28 +104,27 @@ public class WDGraph_Algo implements dw_graph_algorithms {
         return sum;
     }
 
-
-    /**
-     * returns the the shortest path between src to dest - as an ordered List of nodes:
-     * src--> n1-->n2-->...dest
-     * see: https://en.wikipedia.org/wiki/Shortest_path_problem
-     * Note if no such path --> returns null;
-     *
-     * @param src  - start node
-     * @param dest - end (target) node
-     * @return List<node_data>
-     */
     @Override
-    public List<node_data> shortestPath(int src, int dest) {
-        List<node_data> ll = new ArrayList<>();
+    public List<NodeData> shortestPath(int src, int dest) {
+        List<NodeData> ll = new ArrayList<>();
         double flag = shortestPathDist(src, dest);
         //first we check if the nodes are connected and if so we use the function ShortPath to return the shortest Path
         if (flag != -1) {
-            node_data Src = this._g.getNode(src);
-            node_data Dest = this._g.getNode(dest);
+            NodeData Src = this._g.getNode(src);
+            NodeData Dest = this._g.getNode(dest);
 
             return ShortPath(Dest, Src, ll);
         }
+        return null;
+    }
+
+    @Override
+    public NodeData center() {
+        return null;
+    }
+
+    @Override
+    public List<NodeData> tsp(List<NodeData> cities) {
         return null;
     }
 
@@ -177,8 +138,8 @@ public class WDGraph_Algo implements dw_graph_algorithms {
      */
     @Override
     public double shortestPathDist(int src, int dest) {
-        node_data Src = _g.getNode(src);
-        node_data Dest = _g.getNode(dest);
+        NodeData Src = _g.getNode(src);
+        NodeData Dest = _g.getNode(dest);
 
         if (Src != null && Dest != null) {
             this.initNodeWeight();
@@ -191,15 +152,15 @@ public class WDGraph_Algo implements dw_graph_algorithms {
         return -1;
     }
 
-    private void setDistance(node_data n) {
-        PriorityQueue<node_data> q = new PriorityQueue<>();
+    private void setDistance(NodeData n) {
+        PriorityQueue<NodeData> q = new PriorityQueue<>();
         n.setWeight(0);
         q.add(n);
 
         while (!q.isEmpty()) {
-            node_data temp = q.poll();
+            NodeData temp = q.poll();
 
-            for (edge_data i : _g.getE(temp.getKey())) {
+            for (EdgeData i : _g.getE(temp.getKey())) {
                 double SEdge = i.getWeight() + temp.getWeight();
                 if (_g.getNode(i.getDest()).getWeight() == -1 || (_g.getNode(i.getDest()).getWeight() > SEdge)) {//&& _g.getNode(i.getDest()).getWeight() != 0)
                     q.add(_g.getNode(i.getDest()));
@@ -216,17 +177,17 @@ public class WDGraph_Algo implements dw_graph_algorithms {
      * @param dest id of dest node
      * @param ll   list
      */
-    private List<node_data> ShortPath(node_data dest, node_data src, List<node_data> ll) {
+    private List<NodeData> ShortPath(NodeData dest, NodeData src, List<NodeData> ll) {
         //we start by putting the dest in the stack
-        Stack<node_data> stack = new Stack<>();
+        Stack<NodeData> stack = new Stack<>();
 
         stack.add(dest);
-        node_data temp = stack.peek();
+        NodeData temp = stack.peek();
         temp.setTag(-2);
         //then we check until we reach the source node
         while (temp != src) {
-            NodeData n_d = (NodeData) temp;
-            for (node_data i : n_d.getConnectedNode().values()) {
+            impNodeData n_d = (impNodeData) temp;
+            for (NodeData i : n_d.getConnectedNode().values()) {
                 //if the neighbors weight + the edge wight to the node equal to the node wight then we putting it in the stack
                 if (n_d.getWeight() == i.getWeight() + _g.getEdge(i.getKey(), temp.getKey()).getWeight() && i.getTag() != -2) {//
                     stack.add(i);
@@ -249,7 +210,7 @@ public class WDGraph_Algo implements dw_graph_algorithms {
      * Initialize the nodes weight to -1.
      */
     private void initNodeWeight() {
-        for (node_data i : _g.getV()) {
+        for (NodeData i : _g.getV()) {
             i.setWeight(-1);
         }
     }
@@ -258,7 +219,7 @@ public class WDGraph_Algo implements dw_graph_algorithms {
      * Initialize the nodes tag to -1.
      */
     private void initNodeTag() {
-        for (node_data i : _g.getV()) {
+        for (NodeData i : _g.getV()) {
             i.setTag(-1);
         }
     }
@@ -275,7 +236,7 @@ public class WDGraph_Algo implements dw_graph_algorithms {
         // we save the file using json format
         JsonObject json_obj = new JsonObject();
         JsonArray nodes_arr = new JsonArray();
-        for (node_data i : _g.getV()) {
+        for (NodeData i : _g.getV()) {
             JsonObject jo_node = new JsonObject();
             if (i.getLocation() != null) {
                 String loc = i.getLocation().x() + "," + i.getLocation().y() + "," + i.getLocation().z();
@@ -288,8 +249,8 @@ public class WDGraph_Algo implements dw_graph_algorithms {
         }
 
         JsonArray edges_arr = new JsonArray();
-        for (node_data i : _g.getV()) {
-            for (edge_data j : _g.getE(i.getKey())) {
+        for (NodeData i : _g.getV()) {
+            for (EdgeData j : _g.getE(i.getKey())) {
                 JsonObject jo_edge = new JsonObject();
                 jo_edge.addProperty("src", j.getSrc());
                 jo_edge.addProperty("w", j.getWeight());
@@ -314,29 +275,20 @@ public class WDGraph_Algo implements dw_graph_algorithms {
         }
     }
 
-    /**
-     * This method load a graph to this graph algorithm.
-     * if the file was successfully loaded - the underlying graph
-     * of this class will be changed (to the loaded one), in case the
-     * graph was not loaded the original graph should remain "as is".
-     *
-     * @param file file name of JSON file
-     * @return true iff the graph was successfully loaded.
-     */
     @Override
     public boolean load(String file) {
         //we opening the json file that wee save and make from it a new graph
         JsonObject json_obj;
         try {
             String json_str = new String(Files.readAllBytes(Paths.get(file)));
-            directed_weighted_graph g = new WDGraph_DS();
+            DirectedWeightedGraph g = new WDGraph_DS();
             json_obj = JsonParser.parseString(json_str).getAsJsonObject();
 
             JsonArray nodes_arr = json_obj.get("Nodes").getAsJsonArray();
             for (JsonElement i : nodes_arr) {
                 String[] xyz = i.getAsJsonObject().get("pos").getAsString().split(",");
-                node_data n = new NodeData(i.getAsJsonObject().get("id").getAsInt());
-                geo_location loc = new Geo_locationImpl
+                impNodeData n = new impNodeData(i.getAsJsonObject().get("id").getAsInt());
+                GeoLocation loc = new impGeoLocation
                         (Double.parseDouble(xyz[0]), Double.parseDouble(xyz[1]), Double.parseDouble(xyz[2]));
                 n.setLocation(loc);
                 g.addNode(n);
@@ -357,14 +309,14 @@ public class WDGraph_Algo implements dw_graph_algorithms {
         }
     }
 
-    public List<List<node_data>> connected_components() {
-        Set<node_data> ll = new LinkedHashSet<>();
-        List<List<node_data>> res = new LinkedList<>();
-        List<node_data> ll_index = new LinkedList<>(_g.getV());
+    public List<List<NodeData>> connected_components() {
+        Set<NodeData> ll = new LinkedHashSet<>();
+        List<List<NodeData>> res = new LinkedList<>();
+        List<NodeData> ll_index = new LinkedList<>(_g.getV());
 
-        for (node_data i : ll_index) {
+        for (NodeData i : ll_index) {
             if (!ll.contains(i)) {
-                List<node_data> temp = connected_component(i.getKey());
+                List<NodeData> temp = connected_component(i.getKey());
                 res.add(temp);
                 ll.addAll(temp);
             }
@@ -372,24 +324,24 @@ public class WDGraph_Algo implements dw_graph_algorithms {
         return res;
     }
 
-    public List<node_data> connected_component(int id) {
-        node_data src = _g.getNode(id);
+    public List<NodeData> connected_component(int id) {
+        NodeData src = _g.getNode(id);
         int num = -1;
-        for (node_data i : this._g.getV()) {
+        for (NodeData i : this._g.getV()) {
             i.setTag(num);
         }
         num++; //==0
         set_connected_tag(_g.getNode(id), num);
-        List<node_data> ll = new LinkedList<>();
+        List<NodeData> ll = new LinkedList<>();
         ll.add(src);
-        for (node_data i : this._g.getV()) {
+        for (NodeData i : this._g.getV()) {
             if (i.getTag() == 0) {
                 ll.add(i);
             }
         }
-        List<node_data> res = new LinkedList<>();
+        List<NodeData> res = new LinkedList<>();
 
-        for (node_data i : ll) {
+        for (NodeData i : ll) {
             num++;
             if (connect_to_src(src, i, num)) {
                 res.add(i);
@@ -399,16 +351,16 @@ public class WDGraph_Algo implements dw_graph_algorithms {
     }
 
 
-    private void set_connected_tag(node_data src, int num) {
-        PriorityQueue<node_data> q = new PriorityQueue<>();
+    private void set_connected_tag(NodeData src, int num) {
+        PriorityQueue<NodeData> q = new PriorityQueue<>();
         src.setTag(-2);
         q.add(src);
 
         while (!q.isEmpty()) {
-            node_data temp = q.poll();
+            NodeData temp = q.poll();
 
-            for (edge_data i : _g.getE(temp.getKey())) {
-                node_data t_node = _g.getNode(i.getDest());
+            for (EdgeData i : _g.getE(temp.getKey())) {
+                NodeData t_node = _g.getNode(i.getDest());
                 if (t_node.getTag() == -1) {
                     //set tag to 0 if we can reach if from the src node
                     t_node.setTag(num);
@@ -418,18 +370,18 @@ public class WDGraph_Algo implements dw_graph_algorithms {
         }
     }
 
-    private boolean connect_to_src(node_data src, node_data node, int num) {
+    private boolean connect_to_src(NodeData src, NodeData node, int num) {
         if (src == node) {
             return true;
         }
-        PriorityQueue<node_data> q = new PriorityQueue<>();
+        PriorityQueue<NodeData> q = new PriorityQueue<>();
         node.setTag(num);
         q.add(node);
 
         while (!q.isEmpty()) {
-            node_data temp = q.poll();
-            for (edge_data i : _g.getE(temp.getKey())) {
-                node_data t_node = _g.getNode(i.getDest());
+            NodeData temp = q.poll();
+            for (EdgeData i : _g.getE(temp.getKey())) {
+                NodeData t_node = _g.getNode(i.getDest());
                 if (t_node.getTag() != num) {
                     if (t_node.getTag() == -2) {
                         node.setTag(-2);
