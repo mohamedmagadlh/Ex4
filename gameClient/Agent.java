@@ -6,7 +6,6 @@ import api.GeoLocation;
 import api.NodeData;
 import com.google.gson.JsonObject;
 import gameClient.util.Point3D;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,7 @@ public class Agent {
     private GeoLocation _pos;
     private NodeData _node;
     private EdgeData _edge;
-    private List<node_data> _path;
+    private List<NodeData> _path;
     private Pokemon _curr_fruit;
     private static DirectedWeightedGraph _graph;
 
