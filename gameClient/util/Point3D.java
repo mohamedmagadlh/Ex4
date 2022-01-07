@@ -1,8 +1,7 @@
 
 package gameClient.util;
 
-import api.geo_location;
-
+import api.GeoLocation;
 import java.io.Serializable;
 
 public class Point3D implements GeoLocation, Serializable{
@@ -43,7 +42,7 @@ public class Point3D implements GeoLocation, Serializable{
 
     public String toString() { return _x+","+_y+","+_z; }
     @Override
-    public double distance(geo_location p2) {
+    public double distance(GeoLocation p2) {
         double dx = this.x() - p2.x();
         double dy = this.y() - p2.y();
         double dz = this.z() - p2.z();
@@ -52,11 +51,11 @@ public class Point3D implements GeoLocation, Serializable{
     }
 
     public boolean equals(Object p) {
-        if(p==null || !(p instanceof geo_location)) {return false;}
+        if(p==null || !(p instanceof GeoLocation)) {return false;}
         Point3D p2 = (Point3D)p;
         return ( (_x==p2._x) && (_y==p2._y) && (_z==p2._z) );
     }
-    public boolean close2equals(geo_location p2) {
+    public boolean close2equals(GeoLocation p2) {
         return ( this.distance(p2) < EPS ); }
     public boolean equalsXY (Point3D p)
     {return p._x == _x && p._y == _y;}
@@ -66,4 +65,5 @@ public class Point3D implements GeoLocation, Serializable{
         else return "[" + (int)_x + "," + (int)_y+","+(int)_z+"]";
     }
 }
+
 
