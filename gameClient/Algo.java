@@ -13,7 +13,7 @@ public class Algo {
     private static final double EPS = 0.000001;
 
 
-    static int nextMove(game_service game, Agent a) {
+    static int nextMove(Client game, Agent a) {
         int id = a.getId();
         if (indexOfPok(_ar.getPokemons(), a.get_curr_fruit()) == -1) {
             createPath(a);
@@ -31,7 +31,7 @@ public class Algo {
     }
 
 
-    static void placeAgents(int num_of_agents, game_service game) {
+    static void placeAgents(int num_of_agents, Client game) {
         PriorityQueue<Pokemon> pq = new PriorityQueue<>(new Comparator<>() {
             @Override
             public int compare(Pokemon o1, Pokemon o2) {
@@ -50,13 +50,13 @@ public class Algo {
     }
 
 
-    static void placeAgentsByDist(int num_of_agents, game_service game) {
+    static void placeAgentsByDist(int num_of_agents, Client game) {
         DirectedWeightedGraphAlgorithms ga = new DWGAlgo(_graph);
         ga.shortestPathDist(0, 0);
 
         PriorityQueue<NodeData> pq = new PriorityQueue<>(new Comparator<>() {
             @Override
-            public int compare(node_data o1, node_data o2) {
+            public int compare(NodeData o1, NodeData o2) {
                 return Double.compare(o1.getWeight(), o2.getWeight());
             }
         });
@@ -164,7 +164,7 @@ public class Algo {
         if (next_dest == -1 || edge == null) {
             return (long) (130 - a.get_speed() * 7);
         }
-        node_data node = _graph.getNode(next_dest);
+        NodeData node = _graph.getNode(next_dest);
 
         if (a.get_curr_fruit() != null && !edge.equals(a.get_curr_fruit().get_edge())) {
 
@@ -192,3 +192,4 @@ public class Algo {
         Algo._graph = _graph;
     }
 }
+
