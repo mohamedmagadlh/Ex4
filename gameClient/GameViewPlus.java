@@ -1,6 +1,6 @@
 package gameClient;
 
-import api.geo_location;
+import api.GeoLocation;
 import gameClient.util.Point3D;
 import gameClient.util.Range2Range;
 
