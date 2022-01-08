@@ -9,14 +9,12 @@ public class Controller extends WindowAdapter implements ActionListener {
 
     public Runner _run;
     private Thread _thread;
-    private GameGUI _win;
-    private int _id, _level;
+    private int _id;
 
-    public Controller(Runner run, Thread thread, int id, int level) {
+    public Controller(Runner run, Thread thread, int id) {
         _run = run;
         _thread = thread;
         _id = id;
-        _level = level;
     }
 
     @Override
@@ -38,22 +36,13 @@ public class Controller extends WindowAdapter implements ActionListener {
             int id = -1;
             if (str.equals("Submit")) {
                 try {
-                    _level = Integer.parseInt(Panel.getLevel());
-                } catch (NumberFormatException ignored) {
-                    return;
-                }
-                try {
                     id = Integer.parseInt(Panel.getId());
                 } catch (NumberFormatException ignored) {
                 }
 
-            } else {
-                String[] strA = str.split("\\D+");
-                _level = Integer.parseInt(strA[1]);
             }
-
             Client client = _run.get_client();
-            if (client.isRunning()=="false") {
+            if (client.isRunning() == "false") {
                 System.out.print("Game stopped:\t");
                 client.stop();
             }
@@ -63,14 +52,10 @@ public class Controller extends WindowAdapter implements ActionListener {
                 exception.printStackTrace();
             }
 
-            _run = new Runner(_level, id);
-            _run.set_win(_win);
+            _run = new Runner(id);
             _thread = new Thread(_run);
             _thread.start();
         }
     }
 
-    public void set_win(GameGUI win) {
-        _win = win;
-    }
 }
