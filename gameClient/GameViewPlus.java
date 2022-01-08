@@ -24,7 +24,6 @@ public class GameViewPlus extends GameView {
         loadImg();
         sound();
     }
-
     private void loadImg() {
         try {
             _image_agents = new BufferedImage[4];
@@ -40,13 +39,11 @@ public class GameViewPlus extends GameView {
             e.printStackTrace();
         }
     }
-
     @Override
     protected void pokIcon(Graphics g, int radius, GeoLocation fp, int flag) {
         g.drawImage(_image_fruits[flag],
                 (int) fp.x() - radius, (int) fp.y() - radius, 3 * radius, 3 * radius, null);
     }
-
     @Override
     protected void agentIcon(Graphics g, int r, GeoLocation fp, int id) {
         g.drawImage(_image_agents[(id % 4)],
@@ -96,11 +93,9 @@ public class GameViewPlus extends GameView {
     public void paintComponents(Graphics g) {
         super.paintComponents(g);
     }
-
     public static void soundOff(){
         clip.stop();
     }
-
     public static void soundOn(){
         clip.start();
     }
