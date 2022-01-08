@@ -1,19 +1,22 @@
 package gameClient;
 
 import api.*;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 
-
+/**
+ * This class contains all the algorithms needed to manage the Pokemon game.
+ * algorithms like: places agent before starts the game, crate path, and choose the next move.
+ * all the function are static.
+ */
 public class Algo {
-
     private static Arena _ar;
     private static DirectedWeightedGraph _graph;
     private static final double EPS = 0.000001;
 
-
-    static int nextMove(Client game, Agent a) {
+    static int nextMove(Client client, Agent a) {
         int id = a.getId();
         if (indexOfPok(_ar.getPokemons(), a.get_curr_fruit()) == -1) {
             createPath(a);
@@ -26,12 +29,17 @@ public class Algo {
             _ar.get_pokemonsWithOwner().remove(a.get_curr_fruit());
         }
 
-        game.chooseNextEdge(id, next_dest);
+       chooseEdge(id, next_dest,client);
         return next_dest;
+    }
+    public static void chooseEdge(int agentId, int nextNode, Client client) {
+       client. chooseNextEdge("{\"agent_id\":" + agentId + ", \"next_node_id\":" + nextNode + "}");
+
     }
 
 
-    static void placeAgents(int num_of_agents, Client game) {
+
+    static void placeAgents(int num_of_agents, Client client) {
         PriorityQueue<Pokemon> pq = new PriorityQueue<>(new Comparator<>() {
             @Override
             public int compare(Pokemon o1, Pokemon o2) {
@@ -41,17 +49,22 @@ public class Algo {
         pq.addAll(_ar.getPokemons());
 
         for (int i = 0; i < num_of_agents && !pq.isEmpty(); i++) {
-            game.addAgent(pq.poll().get_edge().getSrc());
+
+            addAgent(pq.poll().get_edge().getSrc(),client);
+
             num_of_agents--;
         }
         if (num_of_agents > 0) {
-            placeAgentsByDist(num_of_agents, game);
+            placeAgentsByDist(num_of_agents, client);
         }
     }
+    static  public  void addAgent(int src,Client C)
+    {
+        C.addAgent("{\"id\":" + src + "}");
+    }
 
-
-    static void placeAgentsByDist(int num_of_agents, Client game) {
-        DirectedWeightedGraphAlgorithms ga = new DWGAlgo(_graph);
+    static void placeAgentsByDist(int num_of_agents, Client client) {
+        DirectedWeightedGraphAlgorithms ga = new WDGraph_Algo(_graph);
         ga.shortestPathDist(0, 0);
 
         PriorityQueue<NodeData> pq = new PriorityQueue<>(new Comparator<>() {
@@ -66,13 +79,19 @@ public class Algo {
         }
         int div = pq.size() / num_of_agents;
         for (int i = 0; i < num_of_agents && !pq.isEmpty(); i++) {
-            game.addAgent(pq.peek().getKey());
+            addAgent(pq.peek().getKey(),client);
             for (int j = 0; j < div; j++) {
                 pq.poll();
             }
         }
     }
 
+    /**
+     * Creates the current path of the giving agent, chooses the strategy of creating the path,
+     * and calling the mache function.
+     *
+     * @param a an agent
+     */
     synchronized static void createPath(Agent a) {
         if (_ar.getAgents().size() == _ar.getPokemons().size()) {
             createPathByDistance(a);
@@ -85,9 +104,15 @@ public class Algo {
         }
     }
 
-
+    /**
+     * Create path for the giving agent.
+     * This method calculates the ratio of the distance to the value of each Pokemon,
+     * and returns the shortest path to the Pokemon that gives the best ratio.
+     *
+     * @param a an agent
+     */
     synchronized static void createPathByValDist(Agent a) {
-        DirectedWeightedGraphAlgorithms ga = new DWGAlgo();
+        DirectedWeightedGraphAlgorithms ga = new WDGraph_Algo();
         ga.init(_graph);
 
         ga.shortestPathDist(a.getSrcNode(), a.getSrcNode());
@@ -119,8 +144,15 @@ public class Algo {
         _ar.get_pokemonsWithOwner().add(min_pokemon);
     }
 
+    /**
+     * Create path for the giving agent.
+     * This method calculates the shortest path (uses {@link WDGraph_Algo}) from a to all the Pokemons,
+     * and returns the shortest path to the shortest Pokemon.
+     *
+     * @param a an agent
+     */
     synchronized static void createPathByDistance(Agent a) {
-        DirectedWeightedGraphAlgorithms ga = new DWGAlgo();
+        DirectedWeightedGraphAlgorithms ga = new WDGraph_Algo();
         ga.init(_graph);
 
         Pokemon min_pokemon = _ar.getPokemons().get(0);
@@ -147,6 +179,15 @@ public class Algo {
         _ar.get_pokemonsWithOwner().add(min_pokemon);
     }
 
+    /**
+     * Returns the index within the giving Pokemons list of the first occurrence of
+     * the specified Pokemon.
+     * In either case, if no such character occurs in this List, then {@code -1} is returned.
+     *
+     * @param arr List of {@link Pokemon}
+     * @param pok {@link Pokemon} to search
+     * @return the index of the first occurrence of the Pokemon in the List, or -1 if the Pokemon does not occur.
+     */
     public static int indexOfPok(List<Pokemon> arr, Pokemon pok) {
         int ans = -1;
         for (int i = 0; i < arr.size(); i++) {
@@ -158,6 +199,14 @@ public class Algo {
         return ans;
     }
 
+    /**
+     * Returns time to sleep (milliseconds) util the next call to move().
+     * calculates the walk time to the next node, or to the pokemon.
+     *
+     * @param a         an agent
+     * @param next_dest next destination node of a
+     * @return the length of time to sleep in milliseconds
+     */
     synchronized static long toSleep(Agent a, int next_dest) {
         EdgeData edge = _graph.getEdge(a.getSrcNode(), next_dest);
 
@@ -167,12 +216,15 @@ public class Algo {
         NodeData node = _graph.getNode(next_dest);
 
         if (a.get_curr_fruit() != null && !edge.equals(a.get_curr_fruit().get_edge())) {
+            // treat a scenario which the curr fruit cannot be found on the edge:
 
             double way = edge.getWeight() / a.get_speed();
             way *= 1000;
             return (long) way;
 
         } else if (edge.equals(a.get_curr_fruit().get_edge())) {
+            // treat a scenario which the curr fruit on the current edge:
+
             double way = a.getPos().distance(a.get_curr_fruit().get_pos());
             double way_to_node = a.getPos().distance(node.getLocation());
             way = way / way_to_node;
@@ -192,4 +244,3 @@ public class Algo {
         Algo._graph = _graph;
     }
 }
-
