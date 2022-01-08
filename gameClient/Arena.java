@@ -19,34 +19,34 @@ public class Arena {
     private List<Agent> _agents;
     private List<Pokemon> _pokemons;
     private List<Pokemon> _pokemonsWithOwner;
-    private long _time;
+    private double _time;
     private long _timeStart;
     private int _grade;
 
-    public Arena(Client game) {
-        updateGraph(game.toString());
+    public Arena(Client client) {
+        updateGraph(client.toString());
         Agent.set_graph(_graph);
         Pokemon.set_graph(_graph);
         _agents = new ArrayList<>();
         _pokemons = new ArrayList<>();
-        updatePokemons(game.getPokemons());
+        updatePokemons(client.getPokemons());
         _pokemonsWithOwner = new ArrayList<>();
     }
 
-    public synchronized void update(Client game) {
+    public synchronized void update(Client client) {
 
-        updateAgents(game.getAgents());
-        updatePokemons(game.getPokemons());
-        _time = game.timeToEnd();
-        JsonObject json_obj = JsonParser.parseString(game.toString()).getAsJsonObject();
+        updateAgents(client.getAgents());
+        updatePokemons(client.getPokemons());
+        _time =Double.parseDouble( client.timeToEnd());
+        JsonObject json_obj = JsonParser.parseString(client.toString()).getAsJsonObject();
         _grade = json_obj.getAsJsonObject("GameServer").get("grade").getAsInt();
     }
 
 
     public void updateGraph(String json) {
-        JsonObject jo = JsonParser.parseString(json).getAsJsonObject().getAsJsonObject("Client");
+        JsonObject jo = JsonParser.parseString(json).getAsJsonObject().getAsJsonObject("GameServer");
         String graph_path = jo.get("graph").getAsString();
-        DirectedWeightedGraphAlgorithms ga = new DWGAlgo();
+        DirectedWeightedGraphAlgorithms ga = new WDGraph_Algo();
         ga.load(graph_path);
         _graph = ga.getGraph();
     }
@@ -123,7 +123,6 @@ public class Arena {
         Range yr = new Range(y0, y1);
         return new Range2D(xr, yr);
     }
-
     public static Range2Range w2f(DirectedWeightedGraph g, Range2D frame) {
         Range2D world = GraphRange(g);
         return new Range2Range(world, frame);
@@ -153,11 +152,12 @@ public class Arena {
         this._timeStart = _timeStart;
     }
 
-    public long getTime() {
+    public double getTime() {
         return _time;
     }
 
     public int getGrade() {
         return _grade;
     }
+}
 }
