@@ -7,20 +7,19 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+
 public class Panel extends JPanel {
 
     private final JFrame _frame;
     private final Controller _ctrl;
     private Arena _ar;
-    private int _scenario_num;
     private static boolean muteFlag;
     private static JTextField _id_field, _s_n;
     private JButton _submit;
     private static JButton un_mute;
-    private JLabel _id_label, _level_label, _time, _level, _score, _name_img;
-
+    private JLabel _id_label, _time, _score, _name_img;
     private static ImageIcon[] _image_sound;
-    
+
     public Panel(JFrame frame, Controller ctrl) {
         super();
         _frame = frame;
@@ -36,7 +35,6 @@ public class Panel extends JPanel {
         setPreferredSize(new Dimension(_frame.getWidth(), 110));
         setLayout(null);
     }
-
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -45,56 +43,43 @@ public class Panel extends JPanel {
         updateNameImg();
         update_sound_button();
     }
-
     private void insertBox() {
         _id_label = new JLabel("ID: ");
-        _level_label = new JLabel("level: ");
         _id_field = new JTextField();
         _s_n = new JTextField();
         _submit = new JButton("Submit");
         _submit.addActionListener(_ctrl);
         _id_label.setForeground(Color.white);
-        _level_label.setForeground(Color.white);
         _id_label.setForeground(Color.white);
         add(_submit);
         add(_id_field);
         add(_s_n);
-        add(_level_label);
         add(_id_label);
         updateInsertBox();
     }
-
     private void updateInsertBox() {
         _id_field.setBounds(getWidth() - 150, 20, 120, 22);
         _id_label.setBounds(getWidth() - 185, 20, 50, 22);
         _s_n.setBounds(getWidth() - 150, 45, 120, 22);
-        _level_label.setBounds(getWidth() - 185, 45, 50, 22);
         _submit.setBounds(getWidth() - 135, 70, 95, 25);
     }
-
     private void infoBox() {
         _time = new JLabel("Time to end: ");
         _time.setForeground(Color.white);
         add(_time);
-        _level = new JLabel("Game level: ");
-        _level.setForeground(Color.white);
-        add(_level);
         _score = new JLabel("Score: ");
         _score.setForeground(Color.white);
         add(_score);
         updateInfoBox();
     }
-private void updateInfoBox() {
+    private void updateInfoBox() {
         if (_ar != null) {
-            _time.setText("Time to end: " +_ar.getTime() / 1000);
-            _level.setText("Game level: " + _scenario_num);
+            _time.setText("Time to end: " + (int) _ar.getTime() / 1000);
             _score.setText("Score: " + _ar.getGrade());
         }
         _time.setBounds(20, 20, 150, 30);
-        _level.setBounds(20, 40, 150, 30);
         _score.setBounds(20, 60, 150, 30);
     }
-    
     private void nameImg() {
         BufferedImage name = null;
         try {
@@ -109,7 +94,6 @@ private void updateInfoBox() {
         add(_name_img);
         updateNameImg();
     }
-
     private void updateNameImg() {
         _name_img.setBounds(_frame.getWidth() / 2 - 150, 0, 300, 100);
     }
@@ -119,50 +103,38 @@ private void updateInfoBox() {
         _image_sound[0] = (new ImageIcon("img/mute.png"));
         _image_sound[1] = (new ImageIcon("img/unmute.png"));
 
-        Image image = _image_sound[0].getImage(); // transform it
-        Image new_img = image.getScaledInstance(27, 27, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+        Image image = _image_sound[0].getImage();
+        Image new_img = image.getScaledInstance(27, 27, java.awt.Image.SCALE_SMOOTH);
         _image_sound[0] = new ImageIcon(new_img);
 
-        image = _image_sound[1].getImage(); // transform it
-        new_img = image.getScaledInstance(27, 27, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+        image = _image_sound[1].getImage();
+        new_img = image.getScaledInstance(27, 27, java.awt.Image.SCALE_SMOOTH);
         _image_sound[1] = new ImageIcon(new_img);
 
         un_mute = new JButton("mute");
-        un_mute.setFont(new Font("david", Font.PLAIN, 1));
+        un_mute.setFont(new Font("mo", Font.PLAIN, 1));
         un_mute.addActionListener(_ctrl);
         un_mute.setIcon(_image_sound[0]);
         muteFlag = true;
         add(un_mute);
         update_sound_button();
     }
-    
     public void update_sound_button() {
         un_mute.setBounds(_frame.getWidth() - 250, 27, 40, 40);
     }
-    
     public static int changeMuteIcon() {
         if (muteFlag) {
             un_mute.setIcon(_image_sound[1]);
             muteFlag = false;
-            return 1; 
+            return 1;
         } else {
             un_mute.setIcon(_image_sound[0]);
             muteFlag = true;
-            return 0; 
+            return 0;
         }
     }
-    
-
     public void set_ar(Arena ar) {
         _ar = ar;
-    }
-
-    public void set_level(int level) {
-        _scenario_num = level;
-    }
-
-    public static String getLevel() {
-        return _s_n.getText();
     }
 
     public static String getId() {
