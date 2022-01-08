@@ -15,6 +15,7 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class GameView extends JPanel {
 
     private Arena _ar;
@@ -25,6 +26,8 @@ public class GameView extends JPanel {
         super();
         _startT = System.currentTimeMillis();
     }
+
+
 
     public void set_ar(Arena ar) {
         _ar = ar;
@@ -82,26 +85,28 @@ public class GameView extends JPanel {
     }
 
     private void drawEdge(EdgeData e, Graphics g) {
-
+        // get location info
         DirectedWeightedGraph gg = _ar.get_graph();
         GeoLocation s = gg.getNode(e.getSrc()).getLocation();
         GeoLocation d = gg.getNode(e.getDest()).getLocation();
         GeoLocation s0 = _w2f.world2frame(s);
         GeoLocation d0 = _w2f.world2frame(d);
 
+        // draw edge line
         g.setColor(new Color(0x000099));
+//        g.drawLine((int) s0.x(), (int) s0.y(), (int) d0.x(), (int) d0.y());
         Graphics2D g2 = (Graphics2D) g;
         g2.setStroke(new BasicStroke(2));
         g2.draw(new Line2D.Float((int) s0.x(), (int) s0.y(), (int) d0.x(), (int) d0.y()));
 
-
+        // print weight
         g.setColor(Color.black);
         g.setFont(new Font("Courier", Font.PLAIN, 13));
         String t = String.format("%.2f", e.getWeight());
         int x = (int) ((s0.x() + d0.x()) / 2);
         int y = (int) ((s0.y() + d0.y()) / 2) - 3;
         if (e.getSrc() < e.getDest()) y += 15;
-
+//        g.drawString(t, x, y);
     }
 
     protected void nodeIcon(Graphics g, int radius, GeoLocation fp) {
@@ -165,6 +170,6 @@ public class GameView extends JPanel {
         g.fillRoundRect(0, 0, (int) (w * dt), 10, 10, 10);
     }
     public static void set_startT(long _startT1) {
-    _startT = _startT1;
+        _startT = _startT1;
     }
 }
