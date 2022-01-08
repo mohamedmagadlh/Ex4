@@ -7,7 +7,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-
 public class Panel extends JPanel {
 
     private final JFrame _frame;
@@ -19,8 +18,9 @@ public class Panel extends JPanel {
     private JButton _submit;
     private static JButton un_mute;
     private JLabel _id_label, _level_label, _time, _level, _score, _name_img;
-    private static ImageIcon[] _image_sound;
 
+    private static ImageIcon[] _image_sound;
+    
     public Panel(JFrame frame, Controller ctrl) {
         super();
         _frame = frame;
@@ -46,7 +46,6 @@ public class Panel extends JPanel {
         update_sound_button();
     }
 
-
     private void insertBox() {
         _id_label = new JLabel("ID: ");
         _level_label = new JLabel("level: ");
@@ -65,7 +64,6 @@ public class Panel extends JPanel {
         updateInsertBox();
     }
 
-
     private void updateInsertBox() {
         _id_field.setBounds(getWidth() - 150, 20, 120, 22);
         _id_label.setBounds(getWidth() - 185, 20, 50, 22);
@@ -73,7 +71,6 @@ public class Panel extends JPanel {
         _level_label.setBounds(getWidth() - 185, 45, 50, 22);
         _submit.setBounds(getWidth() - 135, 70, 95, 25);
     }
-
 
     private void infoBox() {
         _time = new JLabel("Time to end: ");
@@ -87,11 +84,9 @@ public class Panel extends JPanel {
         add(_score);
         updateInfoBox();
     }
-
-
-    private void updateInfoBox() {
+private void updateInfoBox() {
         if (_ar != null) {
-            _time.setText("Time to end: " + (int) _ar.getTime() / 1000);
+            _time.setText("Time to end: " +_ar.getTime() / 1000);
             _level.setText("Game level: " + _scenario_num);
             _score.setText("Score: " + _ar.getGrade());
         }
@@ -99,8 +94,7 @@ public class Panel extends JPanel {
         _level.setBounds(20, 40, 150, 30);
         _score.setBounds(20, 60, 150, 30);
     }
-
-
+    
     private void nameImg() {
         BufferedImage name = null;
         try {
@@ -116,12 +110,9 @@ public class Panel extends JPanel {
         updateNameImg();
     }
 
-
     private void updateNameImg() {
         _name_img.setBounds(_frame.getWidth() / 2 - 150, 0, 300, 100);
     }
-
-
     public void sound_button() {
         _image_sound = new ImageIcon[2];
 
@@ -144,25 +135,23 @@ public class Panel extends JPanel {
         add(un_mute);
         update_sound_button();
     }
-
-
+    
     public void update_sound_button() {
         un_mute.setBounds(_frame.getWidth() - 250, 27, 40, 40);
     }
-
-
+    
     public static int changeMuteIcon() {
         if (muteFlag) {
             un_mute.setIcon(_image_sound[1]);
             muteFlag = false;
-            return 1; //indicate for stopping the music
+            return 1; 
         } else {
             un_mute.setIcon(_image_sound[0]);
             muteFlag = true;
-            return 0; //indicate for starting the music
+            return 0; 
         }
     }
-
+    
 
     public void set_ar(Arena ar) {
         _ar = ar;
@@ -184,4 +173,3 @@ public class Panel extends JPanel {
         return _submit;
     }
 }
-
