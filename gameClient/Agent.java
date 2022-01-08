@@ -10,6 +10,8 @@ import gameClient.util.Point3D;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 public class Agent {
 
     private int _id, _is_moving;
@@ -31,8 +33,8 @@ public class Agent {
         _value = agent.get("value").getAsDouble();
         _speed = agent.get("speed").getAsDouble();
         _pos = new Point3D(agent.get("pos").getAsString());
-        setNode(agent.get("src").getAsInt()); // update _node
-        setNextNode(agent.get("dest").getAsInt()); // update _edge
+        setNode(agent.get("src").getAsInt());
+        setNextNode(agent.get("dest").getAsInt());
         _is_moving = agent.get("dest").getAsInt();
     }
     public void setNextNode(int dest) {
