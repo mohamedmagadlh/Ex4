@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+
 public class GameGUI extends JFrame {
 
     private Panel _panel;
@@ -49,6 +50,7 @@ public class GameGUI extends JFrame {
         }
         setIconImage(_image_pok);
     }
+
 
     private void menu() {
         MenuBar menuBar = new MenuBar();
