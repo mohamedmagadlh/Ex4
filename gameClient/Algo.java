@@ -85,13 +85,7 @@ public class Algo {
             }
         }
     }
-
-    /**
-     * Creates the current path of the giving agent, chooses the strategy of creating the path,
-     * and calling the mache function.
-     *
-     * @param a an agent
-     */
+    
     synchronized static void createPath(Agent a) {
         if (_ar.getAgents().size() == _ar.getPokemons().size()) {
             createPathByDistance(a);
@@ -103,14 +97,7 @@ public class Algo {
             }
         }
     }
-
-    /**
-     * Create path for the giving agent.
-     * This method calculates the ratio of the distance to the value of each Pokemon,
-     * and returns the shortest path to the Pokemon that gives the best ratio.
-     *
-     * @param a an agent
-     */
+    
     synchronized static void createPathByValDist(Agent a) {
         DirectedWeightedGraphAlgorithms ga = new WDGraph_Algo();
         ga.init(_graph);
@@ -143,14 +130,7 @@ public class Algo {
         a.set_curr_fruit(min_pokemon);
         _ar.get_pokemonsWithOwner().add(min_pokemon);
     }
-
-    /**
-     * Create path for the giving agent.
-     * This method calculates the shortest path (uses {@link WDGraph_Algo}) from a to all the Pokemons,
-     * and returns the shortest path to the shortest Pokemon.
-     *
-     * @param a an agent
-     */
+    
     synchronized static void createPathByDistance(Agent a) {
         DirectedWeightedGraphAlgorithms ga = new WDGraph_Algo();
         ga.init(_graph);
@@ -178,16 +158,6 @@ public class Algo {
         a.set_curr_fruit(min_pokemon);
         _ar.get_pokemonsWithOwner().add(min_pokemon);
     }
-
-    /**
-     * Returns the index within the giving Pokemons list of the first occurrence of
-     * the specified Pokemon.
-     * In either case, if no such character occurs in this List, then {@code -1} is returned.
-     *
-     * @param arr List of {@link Pokemon}
-     * @param pok {@link Pokemon} to search
-     * @return the index of the first occurrence of the Pokemon in the List, or -1 if the Pokemon does not occur.
-     */
     public static int indexOfPok(List<Pokemon> arr, Pokemon pok) {
         int ans = -1;
         for (int i = 0; i < arr.size(); i++) {
@@ -198,15 +168,7 @@ public class Algo {
         }
         return ans;
     }
-
-    /**
-     * Returns time to sleep (milliseconds) util the next call to move().
-     * calculates the walk time to the next node, or to the pokemon.
-     *
-     * @param a         an agent
-     * @param next_dest next destination node of a
-     * @return the length of time to sleep in milliseconds
-     */
+    
     synchronized static long toSleep(Agent a, int next_dest) {
         EdgeData edge = _graph.getEdge(a.getSrcNode(), next_dest);
 
@@ -216,14 +178,12 @@ public class Algo {
         NodeData node = _graph.getNode(next_dest);
 
         if (a.get_curr_fruit() != null && !edge.equals(a.get_curr_fruit().get_edge())) {
-            // treat a scenario which the curr fruit cannot be found on the edge:
-
             double way = edge.getWeight() / a.get_speed();
             way *= 1000;
             return (long) way;
 
         } else if (edge.equals(a.get_curr_fruit().get_edge())) {
-            // treat a scenario which the curr fruit on the current edge:
+          
 
             double way = a.getPos().distance(a.get_curr_fruit().get_pos());
             double way_to_node = a.getPos().distance(node.getLocation());
