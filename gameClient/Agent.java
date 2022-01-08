@@ -6,9 +6,9 @@ import api.GeoLocation;
 import api.NodeData;
 import com.google.gson.JsonObject;
 import gameClient.util.Point3D;
+
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class Agent {
 
@@ -26,7 +26,6 @@ public class Agent {
         _path = new ArrayList<>();
     }
 
-
     public void update(JsonObject agent) {
         _id = agent.get("id").getAsInt();
         _value = agent.get("value").getAsDouble();
@@ -36,19 +35,14 @@ public class Agent {
         setNextNode(agent.get("dest").getAsInt()); // update _edge
         _is_moving = agent.get("dest").getAsInt();
     }
-
-
     public void setNextNode(int dest) {
 
         int src = this._node.getKey();
         this._edge = _graph.getEdge(src, dest);
     }
-
-
     public boolean isMoving() {
         return _is_moving != -1;
     }
-
 
     public static void set_graph(DirectedWeightedGraph _graph) {
         Agent._graph = _graph;
@@ -111,4 +105,3 @@ public class Agent {
     }
 
 }
-
