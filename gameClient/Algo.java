@@ -17,23 +17,18 @@ public class Algo {
             createPath(a);
             return -1;
         }
-
         int next_dest = a.get_path().get(0).getKey();
         a.get_path().remove(0);
         if (a.get_path().isEmpty()) {
             _ar.get_pokemonsWithOwner().remove(a.get_curr_fruit());
         }
-
-       chooseEdge(id, next_dest,client);
+        chooseEdge(id, next_dest,client);
         return next_dest;
     }
     public static void chooseEdge(int agentId, int nextNode, Client client) {
-       client. chooseNextEdge("{\"agent_id\":" + agentId + ", \"next_node_id\":" + nextNode + "}");
+        client. chooseNextEdge("{\"agent_id\":" + agentId + ", \"next_node_id\":" + nextNode + "}");
 
     }
-
-
-
     static void placeAgents(int num_of_agents, Client client) {
         PriorityQueue<Pokemon> pq = new PriorityQueue<>(new Comparator<>() {
             @Override
@@ -92,11 +87,9 @@ public class Algo {
             }
         }
     }
-
     synchronized static void createPathByValDist(Agent a) {
         DirectedWeightedGraphAlgorithms ga = new WDGraph_Algo();
         ga.init(_graph);
-
         ga.shortestPathDist(a.getSrcNode(), a.getSrcNode());
         Pokemon min_pokemon = _ar.getPokemons().get(0);
         double shortest_way = _graph.getNode(min_pokemon.get_edge().getSrc()).getWeight();
@@ -125,7 +118,6 @@ public class Algo {
         a.set_curr_fruit(min_pokemon);
         _ar.get_pokemonsWithOwner().add(min_pokemon);
     }
-
     synchronized static void createPathByDistance(Agent a) {
         DirectedWeightedGraphAlgorithms ga = new WDGraph_Algo();
         ga.init(_graph);
@@ -178,8 +170,6 @@ public class Algo {
             return (long) way;
 
         } else if (edge.equals(a.get_curr_fruit().get_edge())) {
-
-
             double way = a.getPos().distance(a.get_curr_fruit().get_pos());
             double way_to_node = a.getPos().distance(node.getLocation());
             way = way / way_to_node;
@@ -190,11 +180,9 @@ public class Algo {
         }
         return -120;
     }
-
     public static void set_ar(Arena _ar) {
         Algo._ar = _ar;
     }
-
     public static void set_graph(DirectedWeightedGraph _graph) {
         Algo._graph = _graph;
     }
