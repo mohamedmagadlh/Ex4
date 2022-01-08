@@ -1,6 +1,5 @@
 package gameClient;
 
-import gameClient.Client;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -12,7 +11,6 @@ public class Controller extends WindowAdapter implements ActionListener {
     private Thread _thread;
     private GameGUI _win;
     private int _id, _level;
-
 
     public Controller(Runner run, Thread thread, int id, int level) {
         _run = run;
@@ -54,10 +52,10 @@ public class Controller extends WindowAdapter implements ActionListener {
                 _level = Integer.parseInt(strA[1]);
             }
 
-            Client game = _run.get_game();
-            if (game.isRunning()) {
+            Client client = _run.get_client();
+            if (client.isRunning()=="false") {
                 System.out.print("Game stopped:\t");
-                game.stopGame();
+                client.stop();
             }
             try {
                 _thread.join();
@@ -76,5 +74,3 @@ public class Controller extends WindowAdapter implements ActionListener {
         _win = win;
     }
 }
-
-
