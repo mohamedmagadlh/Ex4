@@ -6,11 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 
-/**
- * This class contains all the algorithms needed to manage the Pokemon game.
- * algorithms like: places agent before starts the game, crate path, and choose the next move.
- * all the function are static.
- */
 public class Algo {
     private static Arena _ar;
     private static DirectedWeightedGraph _graph;
@@ -85,7 +80,7 @@ public class Algo {
             }
         }
     }
-    
+
     synchronized static void createPath(Agent a) {
         if (_ar.getAgents().size() == _ar.getPokemons().size()) {
             createPathByDistance(a);
@@ -97,7 +92,7 @@ public class Algo {
             }
         }
     }
-    
+
     synchronized static void createPathByValDist(Agent a) {
         DirectedWeightedGraphAlgorithms ga = new WDGraph_Algo();
         ga.init(_graph);
@@ -130,7 +125,7 @@ public class Algo {
         a.set_curr_fruit(min_pokemon);
         _ar.get_pokemonsWithOwner().add(min_pokemon);
     }
-    
+
     synchronized static void createPathByDistance(Agent a) {
         DirectedWeightedGraphAlgorithms ga = new WDGraph_Algo();
         ga.init(_graph);
@@ -168,7 +163,7 @@ public class Algo {
         }
         return ans;
     }
-    
+
     synchronized static long toSleep(Agent a, int next_dest) {
         EdgeData edge = _graph.getEdge(a.getSrcNode(), next_dest);
 
@@ -183,7 +178,7 @@ public class Algo {
             return (long) way;
 
         } else if (edge.equals(a.get_curr_fruit().get_edge())) {
-          
+
 
             double way = a.getPos().distance(a.get_curr_fruit().get_pos());
             double way_to_node = a.getPos().distance(node.getLocation());
