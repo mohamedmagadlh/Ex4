@@ -1,11 +1,9 @@
 package gameClient;
 
-import api.DirectedWeightedGraph;
-import api.EdgeData;
-import api.GeoLocation;
-import api.NodeData;
+import api.*;
 import com.google.gson.JsonObject;
 import gameClient.util.Point3D;
+
 
 public class Pokemon {
 
@@ -15,6 +13,7 @@ public class Pokemon {
     private Point3D _pos;
     private EdgeData _edge;
     static private DirectedWeightedGraph _graph;
+
 
     public Pokemon(JsonObject json) {
         update(json);
@@ -27,7 +26,6 @@ public class Pokemon {
         _edge = findEdge();
     }
 
-
     public EdgeData findEdge() {
         for (NodeData v : _graph.getV()) {
             for (EdgeData e : _graph.getE(v.getKey())) {
@@ -38,7 +36,6 @@ public class Pokemon {
         }
         return null;
     }
-
     private boolean isOnEdge(EdgeData e) {
         int src = e.getSrc();
         int dest = e.getDest();
@@ -54,7 +51,6 @@ public class Pokemon {
         double d1 = src_loc.distance(get_pos()) + get_pos().distance(dest_loc);
         return dist > d1 - EPS;
     }
-
     public static void set_graph(DirectedWeightedGraph _graph) {
         Pokemon._graph = _graph;
     }
