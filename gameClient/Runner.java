@@ -1,7 +1,6 @@
 package gameClient;
 import api.*;
 import com.google.gson.JsonParser;
-
 import java.io.IOException;
 import java.net.UnknownHostException;
 
@@ -9,21 +8,14 @@ import static gameClient.Algo.*;
 
 
 public class Runner implements Runnable {
-
-    private GameGUI _win;
+//UPDATE,
     private Arena _ar;
     private DirectedWeightedGraph _graph;
     private Client client;
-    private final int _scenario_num, _id;
-    private final Thread _painter_thread;
+    private final int  _id;
+    public final Thread _painter_thread;
 
-    public static void main(String[] args) {
-        Runner r= new Runner(1,1);
-        Thread t=new Thread();
-        t.start();
-    }
-    public Runner(int scenario_num, int id) {
-        _scenario_num = scenario_num;
+    public Runner (int id) {
         _id = id;
         _painter_thread = new Thread(new Painter());
     }
@@ -45,14 +37,11 @@ public class Runner implements Runnable {
         System.out.println("Game Info: " + client);
 
         initArena(client);
-        initGUI();
-
         client.start();
         String sum_time = client.timeToEnd();
         _ar.set_timeStart(Long.parseLong(sum_time));
         GameView.set_startT(System.currentTimeMillis());
         _ar.update(client);
-
         _painter_thread.start();
 
         while (client.isRunning()=="isRunning") {
@@ -87,13 +76,11 @@ public class Runner implements Runnable {
         } catch (InterruptedException exception) {
             exception.printStackTrace();
         }
-        int moves = JsonParser.parseString(client.toString()).getAsJsonObject().getAsJsonObject("GameServer").get("moves").getAsInt();
+        int moves = JsonParser.parseString(client.toString()).getAsJsonObject().getAsJsonObject("Client").get("moves").getAsInt();
         double x=Double.parseDouble(sum_time);
         double res=(moves /(x/1000));
-        System.out.printf("Level: %d\tGrade: %d,\tMoves: %d,\tAvg moves per sec: %.3f%n", _scenario_num, _ar.getGrade(), moves,res );
+        System.out.printf("Grade: %d,\tMoves: %d,\tAvg moves per sec: %.3f%n", _ar.getGrade(), moves,res );
     }
-
-
     class Painter implements Runnable {
         @Override
         public void run() {
@@ -103,7 +90,6 @@ public class Runner implements Runnable {
                 } catch (InterruptedException exception) {
                     exception.printStackTrace();
                 }
-                _win.repaint();
             }
         }
     }
@@ -112,32 +98,18 @@ public class Runner implements Runnable {
         _ar = new Arena(client);
         _graph = _ar.get_graph();
         initAlgo();
-        int num_of_agents = JsonParser.parseString(client.toString()).getAsJsonObject().getAsJsonObject("GameServer").get("agents").getAsInt();
+        int num_of_agents = JsonParser.parseString(client.toString()).getAsJsonObject().getAsJsonObject("Client").get("agents").getAsInt();
         placeAgents(num_of_agents, client);
         _ar.updatePokemons(client.getPokemons());
         _ar.updateAgents(client.getAgents());
     }
-
-    private void initGUI() {
-        _win.set_ar(_ar);
-        _win.set_level(_scenario_num);
-        _win.setTitle("Pokemons Game " + _scenario_num + (_id != -1 ? (" - " + _id) : ""));
-    }
-
     private void initAlgo() {
         set_graph(_graph);
         set_ar(_ar);
     }
-
     public Client get_client() {
         return client;
     }
-
-    public void set_win(GameGUI win) {
-        _win = win;
-    }
-
-
 
 }
 
