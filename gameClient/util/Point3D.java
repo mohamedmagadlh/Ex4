@@ -1,36 +1,37 @@
 
 package gameClient.util;
 
+
 import api.GeoLocation;
 import java.io.Serializable;
 
-public class Point3D implements GeoLocation, Serializable{
-	private static final long serialVersionUID = 1L;
+public class point implements GeoLocation, Serializable{
+    private static final long serialVersionUID = 1L;
 
     public static final double EPS1 = 0.001, EPS2 = Math.pow(EPS1,2), EPS=EPS2;
 
     public static final Point3D ORIGIN = new Point3D(0,0,0);
     private double _x,_y,_z;
-    public Point3D(double x, double y, double z) {
+    public point(double x, double y, double z) {
         _x=x;
         _y=y;
         _z=z;
     }
 
-    public Point3D(Point3D p) {
-       this(p.x(), p.y(), p.z());
+    public point(Point3D p) {
+        this(p.x(), p.y(), p.z());
     }
-    public Point3D(double x, double y) {this(x,y,0);}
-    public Point3D(String s) { try {
-            String[] a = s.split(",");
-            _x = Double.parseDouble(a[0]);
-            _y = Double.parseDouble(a[1]);
-            _z = Double.parseDouble(a[2]);
-        }
-        catch(IllegalArgumentException e) {
-            System.err.println("ERR: got wrong format string for POint3D init, got:"+s+"  should be of format: x,y,x");
-            throw(e);
-        }
+    public point(double x, double y) {this(x,y,0);}
+    public point(String s) { try {
+        String[] a = s.split(",");
+        _x = Double.parseDouble(a[0]);
+        _y = Double.parseDouble(a[1]);
+        _z = Double.parseDouble(a[2]);
+    }
+    catch(IllegalArgumentException e) {
+        System.err.println("ERR: got wrong format string for POint3D init, got:"+s+"  should be of format: x,y,x");
+        throw(e);
+    }
     }
     @Override
     public double x() {return _x;}
@@ -53,14 +54,14 @@ public class Point3D implements GeoLocation, Serializable{
     public boolean equals(Object p) {
         if(p==null || !(p instanceof GeoLocation)) {return false;}
         Point3D p2 = (Point3D)p;
-        return ( (_x==p2._x) && (_y==p2._y) && (_z==p2._z) );
+        return ( (_x==p2.x()) && (_y==p2.y()) && (_z==p2.z()) );
     }
     public boolean close2equals(GeoLocation p2) {
         return ( this.distance(p2) < EPS ); }
     public boolean equalsXY (Point3D p)
-    {return p._x == _x && p._y == _y;}
+    {return p.x() == _x && p.y() == _y;}
 
-     public String toString(boolean all) {
+    public String toString(boolean all) {
         if(all) return "[" + _x + "," +_y+","+_z+"]";
         else return "[" + (int)_x + "," + (int)_y+","+(int)_z+"]";
     }
