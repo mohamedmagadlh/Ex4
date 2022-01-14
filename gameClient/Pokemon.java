@@ -1,51 +1,66 @@
 package gameClient;
 
 import api.DirectedWeightedGraph;
-import api.EdgeData;
 import api.GeoLocation;
-import api.NodeData;
+import api.geo;
+import api.impEdgeData;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import gameClient.util.Point3D;
+import gameClient.util.point;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Pokemon {
 
     private static final double EPS = 0.001 * 0.001;
     private double _value;
     private int _type;
-    private Point3D _pos;
-    private EdgeData _edge;
+    private GeoLocation _pos;
+    private impEdgeData _edge;
     static private DirectedWeightedGraph _graph;
-    public Pokemon(Point3D p, int t, double v, double s, EdgeData e) {
-        _type = t;
-        _value = v;
-        set_edge(e);
-        _pos = p;
+    public List<Pokemon> pokemons;
+    private boolean isCaptured;
+    private boolean isAssigned;
+
+    public Pokemon( int type, double value, GeoLocation pos) {
+        this._type = type;
+        this._value = value;
+        this._pos = pos;
+
     }
 
-    public Pokemon(JsonObject json) {
-        update(json);
+    public Pokemon(PokemonJson.PokemonJsonInner pokemonJsonInner) {
+        this._value = pokemonJsonInner.value;
+        this._type = pokemonJsonInner.type;
+        this._pos = new geo(pokemonJsonInner.locationString);
+        this._edge = null;
+        isAssigned = false;
+        isCaptured = false;
     }
 
     public void update(JsonObject json) {
         _value = json.get("value").getAsDouble();
         _type = json.get("type").getAsInt();
-        _pos = new Point3D(json.get("pos").getAsString());
-        _edge = findEdge();
+        _pos = new point(json.get("pos").getAsString());
+
     }
 
-
-    public EdgeData findEdge() {
-        for (NodeData v : _graph.getV()) {
-            for (EdgeData e : _graph.getE(v.getKey())) {
-                if (isOnEdge(e)) {
-                    return e;
-                }
+    public static List<Pokemon> load(String json) {
+        try {
+            PokemonJson dgj = new Gson().fromJson(json, PokemonJson.class);
+            List<Pokemon> pokemons = new ArrayList<>();
+            for (int i = 0; i < dgj.getPokemonJsonWrappers().size(); i++) {
+                pokemons.add(new Pokemon(dgj.getPokemonJsonWrappers().get(i).getPokemon()));
             }
+            return pokemons;
+        } catch (Exception e) {
+            return null;
         }
-        return null;
-    }
 
-    private boolean isOnEdge(EdgeData e) {
+    }
+    private boolean isOnEdge(impEdgeData e) {
+
         int src = e.getSrc();
         int dest = e.getDest();
         if (_type < 0 && dest > src) {
@@ -73,15 +88,15 @@ public class Pokemon {
         return _type;
     }
 
-    public Point3D get_pos() {
-        return _pos;
+    public geo get_pos() {
+        return (geo)_pos;
     }
 
-    public EdgeData get_edge() {
+    public impEdgeData get_edge() {
         return _edge;
     }
 
-    public void set_edge(EdgeData _edge) {
+    public void set_edge(impEdgeData _edge) {
         this._edge = _edge;
     }
 
