@@ -1,13 +1,11 @@
+
 package gameClient;
 
-import api.DirectedWeightedGraph;
-import api.EdgeData;
-import api.GeoLocation;
-import api.NodeData;
-import gameClient.util.Point3D;
+import api.*;
 import gameClient.util.Range;
 import gameClient.util.Range2D;
 import gameClient.util.Range2Range;
+import gameClient.util.point;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +15,7 @@ import java.util.List;
 
 public class GameView extends JPanel {
 
-    private Arena _ar;
+    DWGAlgo g;
     private Range2Range _w2f;
     private static long _startT;
 
@@ -26,17 +24,13 @@ public class GameView extends JPanel {
         _startT = System.currentTimeMillis();
     }
 
-    public void set_ar(Arena ar) {
-        _ar = ar;
-        updateFrame();
-    }
 
     private void updateFrame() {
         Range rx = new Range(40, this.getWidth() - 40);
         Range ry = new Range(this.getHeight() - 40, 40);
         Range2D frame = new Range2D(rx, ry);
-        DirectedWeightedGraph g = _ar.get_graph();
-        _w2f = Arena.w2f(g, frame);
+        DirectedWeightedGraph g = g.get_graph();
+
     }
 
     @Override
@@ -47,7 +41,7 @@ public class GameView extends JPanel {
 
         Image buffer_image = createImage(w, h);
         Graphics buffer_graphics = buffer_image.getGraphics();
-        if (_ar != null) {
+        if (g != null) {
             paintComponents(buffer_graphics);
             g.drawImage(buffer_image, 0, 0, null);
         }
@@ -56,17 +50,16 @@ public class GameView extends JPanel {
     @Override
     public void paintComponents(Graphics g) {
         drawGraph(g);
-        drawPokemons(g, _ar, _w2f);
+        drawPokemons(g, g, _w2f);
         drawAgents(g);
-        drawTimeLine(g);
         updateFrame();
     }
 
     private void drawGraph(Graphics g) {
-        DirectedWeightedGraph graph = _ar.get_graph();
-        for (NodeData i : graph.getV()) {
+        DirectedWeightedGraph graph = g.get_graph();
+        for (NodeData i : graph.getNode()) {
             drawNode(i, g);
-            for (EdgeData e : graph.getE(i.getKey())) {
+            for (EdgeData e : graph.getEdge(i.getKey())) {
                 drawEdge(e, g);
             }
         }
@@ -83,7 +76,7 @@ public class GameView extends JPanel {
 
     private void drawEdge(EdgeData e, Graphics g) {
 
-        DirectedWeightedGraph gg = _ar.get_graph();
+        DirectedWeightedGraph gg = g.get_graph();
         GeoLocation s = gg.getNode(e.getSrc()).getLocation();
         GeoLocation d = gg.getNode(e.getDest()).getLocation();
         GeoLocation s0 = _w2f.world2frame(s);
@@ -109,13 +102,13 @@ public class GameView extends JPanel {
         g.fillOval((int) fp.x() - radius, (int) fp.y() - radius, 2 * radius, 2 * radius);
     }
 
-    protected void drawPokemons(Graphics g, Arena ar, Range2Range _w2f) {
-        List<Pokemon> fs = new ArrayList<>(_ar.getPokemons());
+    protected void drawPokemons(Graphics g, geo ar, Range2Range _w2f) {
+        List<Pokemon> fs = new ArrayList<>(ar.getPokemons());
         if (fs.isEmpty())
             return;
         for (Pokemon f : fs) {
             if (f == null) continue;
-            Point3D c = f.get_pos();
+            point c = f.get_pos();
             int radius = 10;
             g.setColor(Color.green);
             if (f.get_type() < 0) {
@@ -135,7 +128,7 @@ public class GameView extends JPanel {
         g.fillOval((int) fp.x() - radius, (int) fp.y() - radius, 2 * radius, 2 * radius);
     }
     private void drawAgents(Graphics g) {
-        List<Agent> rs = _ar.getAgents();
+        List<Agent> rs = g.getAgents();
         for (Agent a : rs) {
             GeoLocation loc = a.getPos();
             int r = 8;
@@ -151,18 +144,4 @@ public class GameView extends JPanel {
     protected void agentIcon(Graphics g, int r, GeoLocation fp, int id) {
         g.setColor(new Color(150, 60, 90));
         g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
-    }
-
-    private void drawTimeLine(Graphics g) {
-        g.setColor(new Color(0xCD1818));
-        double ts = (double) _ar.get_timeStart();
-        long curT = System.currentTimeMillis()-_startT;
-        double dt = curT / ts;
-
-        double w = getWidth();
-        g.fillRoundRect(0, 0, (int) (w * dt), 10, 10, 10);
-    }
-    public static void set_startT(long _startT1) {
-    _startT = _startT1;
-    }
-}
+    }}
